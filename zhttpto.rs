@@ -14,9 +14,11 @@ use std::str;
 static BACKLOG: uint = 5;
 static PORT:    uint = 4414;
 static IPV4_LOOPBACK: &'static str = "127.0.0.1";
+static mut visitor_count: uint =0;
 
-fn new_connection_callback(new_conn :net_tcp::TcpNewConnection, _killch: std::comm::SharedChan<Option<extra::net_tcp::TcpErrData>>)
+unsafe fn new_connection_callback(new_conn :net_tcp::TcpNewConnection, _killch: std::comm::SharedChan<Option<extra::net_tcp::TcpErrData>>)
 {
+    //visitor_count+=1;
     do spawn {
         let accept_result = extra::net_tcp::accept(new_conn);
         match accept_result {
@@ -24,6 +26,7 @@ fn new_connection_callback(new_conn :net_tcp::TcpNewConnection, _killch: std::co
                println(fmt!("Connection error: %?", err));
             },  
             Ok(sock) => {
+                //visitor_count+=1;
                 let peer_addr: ~str = net_ip::format_addr(&sock.get_peer_addr());
                 println(fmt!("Received connection from: %s", peer_addr));
                 
@@ -34,6 +37,9 @@ fn new_connection_callback(new_conn :net_tcp::TcpNewConnection, _killch: std::co
                     },
                     Ok(bytes) => {
                         let request_str = str::from_bytes(bytes.slice(0, bytes.len() - 1));
+                        visitor_count+=1;
+                        //println(fmt!("%u",bytes));
+                        println(fmt!("Request Count: %u",visitor_count));
                         println(fmt!("Request received:\n%s", request_str));
                         let response: ~str = ~
                             "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n
