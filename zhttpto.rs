@@ -44,7 +44,7 @@ unsafe fn new_connection_callback(new_conn :net_tcp::TcpNewConnection, _killch: 
                         //println(fmt!("%s",request_str.slice(0,(uint)(request_str.find_str("HTTP/1.1")))));
                         
                         if aaaa==~"favicon.ico"{
-                            println("TUE");
+                            //println("TUE");
                         }
                         else if aaaa!=~"" {
                             let response: ~str= ~""+load_file(aaaa)[0];
